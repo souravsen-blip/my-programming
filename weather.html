@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>World Weather Checker</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #2196f3, #00bcd4);
+            color: white;
+        }
+
+        .container {
+            padding-top: 80px;
+        }
+
+        .box {
+            background: rgba(0, 0, 0, 0.35);
+            width: 400px;
+            max-width: 90%;
+            margin: auto;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            margin-bottom: 25px;
+        }
+
+        input {
+            width: 85%;
+            padding: 13px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            outline: none;
+        }
+
+        button {
+            margin-top: 15px;
+            padding: 13px 30px;
+            border: none;
+            border-radius: 8px;
+            background: #ff9800;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #f57c00;
+        }
+
+        #weather {
+            margin-top: 25px;
+            font-size: 18px;
+        }
+
+        .temperature {
+            font-size: 40px;
+            font-weight: bold;
+        }
+
+        .error {
+            color: #ffcccc;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="box">
+
+        <h1>🌎 World Weather</h1>
+
+        <input
+            type="text"
+            id="city"
+            placeholder="Enter any city"
+        >
+
+        <br>
+
+        <button onclick="checkWeather()">
+            Check Weather
+        </button>
+
+        <div id="weather"></div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+async function checkWeather() {
+
+    let city = document.getElementById("city").value.trim();
+
+    let apiKey = "c0f9eb252d4cfd08907181330c9aaafa";
+
+    if (city === "") {
+        document.getElementById("weather").innerHTML =
+            "<p class='error'>Please enter a city name.</p>";
+        return;
+    }
+
+    let url =
+        "https://api.openweathermap.org/data/2.5/weather" +
+        "?q=" + encodeURIComponent(city) +
+        "&appid=" + apiKey +
+        "&units=metric";
+
+    document.getElementById("weather").innerHTML =
+        "<p>🔄 Checking weather...</p>";
+
+    try {
+
+        let response = await fetch(url);
+
+        let data = await response.json();
+
+        if (data.cod != 200) {
+
+            document.getElementById("weather").innerHTML =
+                "<p class='error'>❌ City not found.<br>" +
+                "Try another city name.</p>";
+
+            return;
+        }
+
+        let temperature = data.main.temp;
+        let feelsLike = data.main.feels_like;
+        let humidity = data.main.humidity;
+        let wind = data.wind.speed;
+        let condition = data.weather[0].description;
+        let country = data.sys.country;
+
+        document.getElementById("weather").innerHTML =
+
+            "<h2>📍 " + data.name + ", " + country + "</h2>" +
+
+            "<div class='temperature'>" +
+            "🌡 " + temperature + " °C" +
+            "</div>" +
+
+            "<p>🌤 Condition: " +
+            condition +
+            "</p>" +
+
+            "<p>🌡 Feels like: " +
+            feelsLike +
+            " °C</p>" +
+
+            "<p>💧 Humidity: " +
+            humidity +
+            "%</p>" +
+
+            "<p>💨 Wind speed: " +
+            wind +
+            " m/s</p>";
+
+    }
+
+    catch (error) {
+
+        document.getElementById("weather").innerHTML =
+            "<p class='error'>" +
+            "❌ Unable to connect to the weather service." +
+            "</p>";
+
+    }
+
+}
+
+</script>
+
+</body>
+</html>
